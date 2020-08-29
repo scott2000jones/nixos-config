@@ -55,6 +55,7 @@
     neofetch
     gnome3.gnome-tweaks
     gnome3.gnome-boxes
+    qemu_kvm
     firefox
     nodePackages.npm
     nodejs
