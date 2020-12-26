@@ -11,7 +11,10 @@
     ];
 
   # Allow proprietary or unfree software
-  nixpkgs.config.allowUnfree = true;  
+  nixpkgs.config.allowUnfree = true; 
+  
+  # Select latest Linux kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # Use the systemd-boot EFI boot loader.
   boot.loader.systemd-boot.enable = true;
@@ -19,6 +22,9 @@
 
   networking.hostName = "scott-thinkpad"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
+  # Set your time zone.
+  time.timeZone = "Europe/London";
 
   # The global useDHCP flag is deprecated, therefore explicitly set to false here.
   # Per-interface useDHCP will be mandatory in the future, so this generated config
@@ -41,8 +47,31 @@
     keyMap = "us";
   };
 
-  # Set your time zone.
-  time.timeZone = "Europe/London";
+  # Enable the GNOME 3 Desktop Environment.
+  services.xserver.enable = true;
+  services.xserver.displayManager.gdm.enable = true;
+  services.xserver.desktopManager.gnome3.enable = true;
+  
+
+  # Configure keymap in X11
+  services.xserver.layout = "us";
+  # services.xserver.xkbOptions = "eurosign:e";
+
+  # Enable CUPS to print documents.
+  # services.printing.enable = true;
+
+  # Enable sound.
+  sound.enable = true;
+  # hardware.pulseaudio.enable = true;
+
+  # Enable touchpad support (enabled default in most desktopManager).
+  services.xserver.libinput.enable = true;
+
+  # Define a user account. Don't forget to set a password with ‘passwd’.
+  users.users.scott = {
+    isNormalUser = true;
+    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
+  };
 
   # List packages installed in system profile. To search, run:
   # $ nix search wget
@@ -50,7 +79,7 @@
     wget
     nano
     git
-    vscode
+    atom
     discord
     neofetch
     gnome3.gnome-tweaks
@@ -59,6 +88,10 @@
     firefox
     nodePackages.npm
     nodejs
+    go
+    openjdk
+    gcc
+    powerline-go
   ];
   environment.gnome3.excludePackages = [ 
     pkgs.gnome3.gnome-weather 
@@ -73,13 +106,17 @@
     pkgs.gnome3.gnome-contacts
   ];
 
+  environment.interactiveShellInit = ''
+    [ -n "$SSH_CONNECTION" ] && unset SSH_ASKPASS
+    export GIT_ASKPASS=   
+  '';
+
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
   # programs.mtr.enable = true;
   # programs.gnupg.agent = {
   #   enable = true;
   #   enableSSHSupport = true;
-  #   pinentryFlavor = "gnome3";
   # };
 
   # List services that you want to enable:
@@ -93,42 +130,12 @@
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
-  # Enable CUPS to print documents.
-  # services.printing.enable = true;
-
-  # Enable sound.
-  sound.enable = true;
-  # hardware.pulseaudio.enable = true;
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-  services.xserver.layout = "us";
-  # services.xserver.xkbOptions = "eurosign:e";
-
-  # Enable touchpad support.
-  services.xserver.libinput.enable = true;
-
-  # Enable the GNOME Desktop Environment.
-  services.xserver.displayManager.gdm.enable = true;
-  services.xserver.desktopManager.gnome3.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.scott = {
-    isNormalUser = true;
-    extraGroups = [ "wheel" ]; # Enable ‘sudo’ for the user.
-  };
-
-  environment.interactiveShellInit = ''
-    [ -n "$SSH_CONNECTION" ] && unset SSH_ASKPASS
-    export GIT_ASKPASS=   
-  '';
-
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
   # on your system were taken. It‘s perfectly fine and recommended to leave
   # this value at the release version of the first install of this system.
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "20.03"; # Did you read the comment?
+  system.stateVersion = "20.09"; # Did you read the comment?
 
 }
